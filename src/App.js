@@ -1,8 +1,9 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import "./App.css";
 import TodoForm from "./todoForm/todoForm";
 import Todo from "./todo/todo";
-import {TODO_LIST_KEY} from "./const";
+import {TODO_LIST_KEY, URL} from "./const";
+import axios from "axios";
 
 function useLocalStorageState(key) {
     const [value, setValue] = React.useState(
@@ -25,6 +26,12 @@ function useLocalStorageState(key) {
 function App() {
     const [todos, setTodos] = useLocalStorageState(TODO_LIST_KEY);
 
+    useEffect(() => {
+        fetchExternalTodoList().then(data => {
+            setTodos([...todos, ...data]);
+        });
+    },[])
+
     const addTodo = (text) => {
         const newTodos = [...todos, {text, isFinish: false}];
         setTodos(newTodos);
@@ -41,6 +48,15 @@ function App() {
         newTodos.splice(index, 1);
         setTodos(newTodos);
     };
+
+    async function fetchExternalTodoList() {
+        let axiosResponse = await axios.get(URL);
+        if (axiosResponse.status === 200) {
+            return axiosResponse.data.map(todo => {
+                return {text: todo.title, isFinish: todo.completed}
+            });
+        }
+    }
 
     return (
         <div className="app">
@@ -64,3 +80,5 @@ function App() {
 }
 
 export default App;
+
+//https://jsonplaceholder.typicode.com/users/1/todos
