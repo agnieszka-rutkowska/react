@@ -1,6 +1,6 @@
 import TodoForm from "../todoForm/todoForm";
 import Todo from "./todo";
-import {TODO_LIST_KEY} from "./../const";
+import {TODO_LIST_KEY, URL} from "./../const";
 import React, {useEffect} from "react";
 import axios from "axios";
 
@@ -26,9 +26,11 @@ const TodoPage = props => {
     const [todos, setTodos] = useLocalStorageState(TODO_LIST_KEY);
 
     useEffect(() => {
-        if(todos != undefined && todos.length == 0){
+        if(todos !== undefined && todos.length === 0){
             fetchExternalTodoList().then(data => {
-                setTodos([ ...todos, ...data]);
+                if(data){
+                    setTodos([ ...todos, ...data]);
+                }
             });
         }
     },[])
@@ -55,12 +57,17 @@ const TodoPage = props => {
     }
 
     async function fetchExternalTodoList() {
-        let axiosResponse = await axios.get(URL);
-        if (axiosResponse.status === 200) {
-            return axiosResponse.data.map(todo => {
-                return {text: todo.title, isFinish: todo.completed}
-            });
+        try {
+            let axiosResponse = await axios.get(URL);
+            if (axiosResponse.status === 200) {
+                return axiosResponse.data.map(todo => {
+                    return {text: todo.title, isFinish: todo.completed}
+                });
+            }
+        } catch (e) {
+            console.log("fetchExternalTodoList error: ", e);
         }
+
     }
     return (
         <div className="backgroundApp">
