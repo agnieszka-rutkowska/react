@@ -22,7 +22,7 @@ function useLocalStorageState(key) {
     return [value, setCustomValue];
 }
 
-const TodoPage = props => {
+const TodoPage = ({props}) => {
     const [todos, setTodos] = useLocalStorageState(TODO_LIST_KEY);
 
     useEffect(() => {

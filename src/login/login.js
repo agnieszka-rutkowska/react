@@ -1,16 +1,13 @@
 import * as React from "react";
-import {MOCK_LOGIN, MOCK_PASSWORD} from "./../const";
 
-const Login = props => {
+const Login = ({props, handleLogin}) => {
 
     let loginInput = React.createRef();
     let passwordInput = React.createRef();
 
-    function handleLogin() {
-        if(loginInput.current.value === MOCK_LOGIN && passwordInput.current.value === MOCK_PASSWORD){
-            props.history.push('/todo')   
-        } else {
-            alert("Błedne dane logowania");
+    function login() {
+        if (handleLogin(loginInput.current.value, passwordInput.current.value)) {
+            props.history.push('/todo');
         }
     };
 
@@ -26,7 +23,7 @@ const Login = props => {
                 <input type="password" ref={passwordInput}/>
             </label>
             <div>
-                <button onClick={handleLogin}>Submit</button>
+                <button onClick={() => login()}>Submit</button>
             </div>
         </div>
     );
