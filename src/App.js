@@ -1,9 +1,9 @@
 import "./App.css";
 import Login from "./login/login";
-import {BrowserRouter as Router, Route, Switch, Link, Redirect} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Switch, Redirect} from 'react-router-dom';
 import TodoPage from "./todo/todoPage";
 import {MOCK_LOGIN, MOCK_PASSWORD} from "./const";
-import React, {Component, useState} from "react";
+import React, {Component} from "react";
 
 class App extends Component {
     isAutheticated = false;

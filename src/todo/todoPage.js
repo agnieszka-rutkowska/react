@@ -1,7 +1,7 @@
 import TodoForm from "../todoForm/todoForm";
 import Todo from "./todo";
 import {TODO_LIST_KEY, URL} from "./../const";
-import React, {useEffect} from "react";
+import React, {useEffect, useReducer} from "react";
 import axios from "axios";
 
 function useLocalStorageState(key) {
@@ -22,18 +22,32 @@ function useLocalStorageState(key) {
     return [value, setCustomValue];
 }
 
+function reducer(state, action) {
+    switch (action.type) {
+        case 'done':
+            return true;
+        case 'notdone':
+            return false;
+        case 'all':
+            return null;
+        default:
+            throw new Error();
+    }
+}
+
 const TodoPage = ({props}) => {
     const [todos, setTodos] = useLocalStorageState(TODO_LIST_KEY);
+    const [doneFilter, dispatch] = useReducer(reducer, null);
 
     useEffect(() => {
-        if(todos !== undefined && todos.length === 0){
+        if (todos !== undefined && todos.length === 0) {
             fetchExternalTodoList().then(data => {
-                if(data){
-                    setTodos([ ...todos, ...data]);
+                if (data) {
+                    setTodos([...todos, ...data]);
                 }
             });
         }
-    },[])
+    }, [])
 
     const addTodo = (text) => {
         const newTodos = [...todos, {text, isFinish: false}];
@@ -52,7 +66,7 @@ const TodoPage = ({props}) => {
         setTodos(newTodos);
     };
 
-    const handleLogout =() => {
+    const handleLogout = () => {
         props.history.push('/')
     }
 
@@ -69,10 +83,15 @@ const TodoPage = ({props}) => {
         }
 
     }
+
     return (
         <div className="backgroundApp">
             <button onClick={handleLogout}>Wyloguj</button>
             <p className="textTodo">Aplikacja Todo</p>
+            <button onClick={() => dispatch({type: 'done'})}>Zrobione</button>
+            <button onClick={() => dispatch({type: 'notdone'})}>Do zrobienia</button>
+            <button onClick={() => dispatch({type: 'all'})}>Wszystko</button>
+
             <div className="todo-list">
                 {todos.map((todo, index) => (
                     <Todo
@@ -81,6 +100,7 @@ const TodoPage = ({props}) => {
                         todo={todo}
                         finishTodo={finishTodo}
                         removeTodo={removeTodo}
+                        visible={doneFilter}
                     />
                 ))}
                 <TodoForm addTodo={addTodo}/>
